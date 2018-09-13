@@ -50,7 +50,7 @@ void initializeWORD(pWORD & words)
 }
 
 //fileName是文件名，pWORD是放字符的数组，add_data函数不带排序功能，返回字符种类的总数(int)
-int add_data(pWORD & words, int& sumArtical)
+int add_data(pWORD & words, int& sumArtical, char* FILENAME)
 {
 	words=(pWORD)malloc(127 * sizeof(WORD));
 	initializeWORD(words);
@@ -62,9 +62,9 @@ int add_data(pWORD & words, int& sumArtical)
 
 	char word;//当前读入的word
 	FILE *file;
-	file = fopen(ORI_FILE_NAME, "r");
+	file = fopen(FILENAME, "r");
 	//fseek(file, sizeof(char) * 3, SEEK_SET);//不知道为什么开头有三个char的东西，先跳过去吧。
-	fseek(file, sizeof(char) * 3, SEEK_SET);//不知道为什么开头有三个char的东西，先跳过去吧。
+	fseek(file, 0, SEEK_SET);//不知道为什么开头有三个char的东西，先跳过去吧。
 	while (!feof(file))
 	{
 		fread(&article[sumArtical], 1, sizeof(char), file);
@@ -86,7 +86,7 @@ int add_data(pWORD & words, int& sumArtical)
 	//	}
 	//}
 	free(article);
-	return typeSum-1;
+	return typeSum;
 }
 
 //给录入好的数据排个序列
