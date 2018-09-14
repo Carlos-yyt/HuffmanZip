@@ -1,35 +1,3 @@
-﻿//                                                          _ooOoo_
-//                                                         o8888888o
-//                                                         88" . "88
-//                                                         (| -_- |)
-//                                                          O\ = /O
-//                                                      ____/`---'\____
-//                                                    .   ' \\| |// `.
-//                                                     / \\||| : |||// \
-//                                                   / _||||| -:- |||||- \
-//                                                     | | \\\ - /// | |
-//                                                   | \_| ''\---/'' | |
-//                                                    \ .-\__ `-` ___/-. /
-//                                                 ___`. .' /--.--\ `. . __
-//                                              ."" '< `.___\_<|>_/___.' >'"".
-//                                             | | : `- \`.;`\ _ /`;.`/ - ` : | |
-//                                               \ \ `-. \_ __\ /__ _/ .-` / /
-//                                       ======`-.____`-.___\_____/___.-`____.-'======
-//                                                          `=---='
-//
-//                                       .............................................
-//                                              佛祖保佑             永无BUG
-//                                      佛曰:
-//                                              写字楼里写字间，写字间里程序员；
-//                                              程序人员写程序，又拿程序换酒钱。
-//                                              酒醒只在网上坐，酒醉还来网下眠；
-//                                              酒醉酒醒日复日，网上网下年复年。
-//                                              但愿老死电脑间，不愿鞠躬老板前；
-//                                              奔驰宝马贵者趣，公交自行程序员。
-//                                              别人笑我忒疯癫，我笑自己命太贱；
-//                                              不见满街漂亮妹，哪个归得程序员？
-
-
 #include "Huffman.h"
 #include "statistic.h"
 
@@ -43,6 +11,8 @@ int main()
 
 	int int_choice = 0;			//记录选择
 	char char_choice[30];		//记录选择
+	char char_toHUF[30];		//用来放置转成HUF的文件名
+	char char_newTxt[30];		//用来解压出来的TXT文件名
 	char char_aimFileName[30];	//存用户想要的文件名
 
 	printf("如果要压缩文件：\n\t请将您要压缩的英文文本放在.txt文件里，并将它拷贝到与源文件同级的文件夹里。【扣1】\n\t或者，可以直接调用样本文件ori_data.txt。【扣2】\n");
@@ -65,9 +35,9 @@ int main()
 			huffmanPrint(words, sumArtical);
 
 			//改成HUF后缀
-			changeFileNameToHuf(char_choice);
+			changeFileNameToHuf(char_choice,char_toHUF);
 
-			sumArtical_huf = outPutHufArtical(code, sumWords, words, char_choice, char_choice);
+			sumArtical_huf = outPutHufArtical(code, sumWords, words, char_choice, char_toHUF);
 
 
 			printf("\n压缩率为：%f %%\n", (sumArtical_huf / (double)sumArtical) * 100);
@@ -76,7 +46,8 @@ int main()
 			scanf("%d", &int_choice);
 			if (int_choice==1)
 			{
-				decodeHufArtical(code, sumWords, words, AIM_FILE_NAME_HUFFMAN, AIM_FILE_NAME);
+				chanFileNameToTxt_new(char_choice, char_newTxt);
+				decodeHufArtical(code, sumWords, words, char_toHUF, char_newTxt);
 				printf("\n===============\n%s 文件已经被 解压 了。\n您可以在 文件夹 里查看（记事本打开的话可能会缺失空格，请使用写字板打开）。\n===============\n\n", char_choice);
 			}
 			else if(int_choice==-1)
