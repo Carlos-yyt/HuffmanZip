@@ -1,4 +1,4 @@
-﻿// Huffman.cpp: 定义控制台应用程序的入口点。
+// Huffman.cpp: 定义控制台应用程序的入口点。
 //
 
 #include "Huffman.h"
@@ -238,7 +238,7 @@ int outPutHufArtical(HuffmanCode code, int sumWord, pWORD words, char* IN_FILENA
 	fwrite((char*)&artical_sum, sizeof(unsigned long), 1, outFile);//写入文章总字符数
 
 
-	//一个char一个char地读入原文
+	//一个char一个char地读入英文原文
 	fread((char*)&getch, sizeof(char), 1, inFile);
 	//写入文件
 	while (!feof(inFile))
@@ -424,17 +424,19 @@ void buildEncodeHuffmanTree(huffmanTree &tree, unsigned int sumWords, unsigned i
 }
 
 //改名字
-void changeFileNameToHuf(char * filename)
+void changeFileNameToHuf(char * txt, char * huf)
 {
 	int i = 0;
-	while (filename[i]!='.')
+	while (txt[i] != '.')
 	{
+		huf[i] = txt[i];
 		i++;
 	}
-	filename[++i] = 'H';
-	filename[++i] = 'U';
-	filename[++i] = 'F';
-	filename[++i] = '\0';
+	huf[i++] = '.';
+	huf[i++] = 'H';
+	huf[i++] = 'U';
+	huf[i++] = 'F';
+	huf[i++] = '\0';
 
 }
 
@@ -456,4 +458,29 @@ void changeFileNameToTxt(char * huf, char * txt)
 	txt[i++] = 'x';
 	txt[i++] = 't';
 	txt[i++] = '\0';
+}
+
+void chanFileNameToTxt_new(char * oldTxt, char * newTxt)
+{
+	int i = 0;
+	while (oldTxt[i]!='.')
+	{
+		newTxt[i] = oldTxt[i];
+		i++;
+	}
+
+	newTxt[i++] = '_';
+	newTxt[i++] = 'f';
+	newTxt[i++] = 'r';
+	newTxt[i++] = 'o';
+	newTxt[i++] = 'm';
+	newTxt[i++] = 'H';
+	newTxt[i++] = 'U';
+	newTxt[i++] = 'F';
+	newTxt[i++] = '.';
+	newTxt[i++] = 't';
+	newTxt[i++] = 'x';
+	newTxt[i++] = 't';
+	newTxt[i++] = '\0';
+
 }
