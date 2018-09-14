@@ -1,8 +1,9 @@
-﻿// Huffman.cpp: 定义控制台应用程序的入口点。
+// Huffman.cpp: 定义控制台应用程序的入口点。
 //
 
 #include "Huffman.h"
 #include "statistic.h"
+
 void select(huffmanTree &HT, int max, int &s) {
 	//附上：int weight[] = { 1,3,5,7,9,11,13,15 };
 	//printf("\n\n");
@@ -60,6 +61,7 @@ void select2(huffmanTree &HT, int max, int &s) {
 	HT[flag].parent = 1;
 }
 
+//创建Huffman树并编码，用于压缩文件之前
 void HuffmanTree_Build_and_Code(huffmanTree &HT, HuffmanCode &HC, int *w, int n) {
 	//w存放权值，HT是哈夫曼树，求出n个字符的哈夫曼编码。
 	//for (int j = 0; j < n; j++)
@@ -108,7 +110,7 @@ void HuffmanTree_Build_and_Code(huffmanTree &HT, HuffmanCode &HC, int *w, int n)
 	int father = 0;
 	for (int i = 1; i <= n; i++)
 	{
-		//printf("\n");
+		//printf("\n");//for debug
 		start = n - 1;//这个是“\0”位。
 		child = i;
 		father = HT[child].parent;
@@ -116,12 +118,12 @@ void HuffmanTree_Build_and_Code(huffmanTree &HT, HuffmanCode &HC, int *w, int n)
 			if (HT[father].lchild == child)//BUG!!!!!!!-done
 			{
 				cd[--start] = '0';
-				//printf("0");
+				//printf("0");//for debug
 			}
 			else
 			{
 				cd[--start] = '1';
-				//printf("1");
+				//printf("1");//for debug
 			}
 		}
 		HC[i] = (char*)malloc(sizeof(char)*(n - start));
@@ -132,6 +134,7 @@ void HuffmanTree_Build_and_Code(huffmanTree &HT, HuffmanCode &HC, int *w, int n)
 	free(cd);
 }
 
+//输出Huffman编码
 void huffmanPrint(HuffmanCode code, int len) {
 	printf("\n\n检查HuffmanCode是否生成：\n");
 	for (int i = 1; i <= len; i++)
@@ -156,6 +159,7 @@ void huffmanPrint(pWORD words, int sumWord)
 	printf("\nThere are %d kinds of char in this artical.\n", char_type);
 }
 
+//测试
 void Huffman_Test(pWORD words, int sumWords, HuffmanCode &code) {
 	huffmanTree tree;
 	int weight[127];
@@ -178,7 +182,7 @@ void Huffman_Test(pWORD words, int sumWords, HuffmanCode &code) {
 		if (words[i].frequency > 0)
 		{
 
-			words[i].huffmanCode = (char*)malloc(sizeof(char) * 10);
+			words[i].huffmanCode = (char*)malloc(sizeof(char) * 20);
 			//words[i].huffmanCode = NULL;
 			strcpy(words[i].huffmanCode, code[codeCount++]);
 			//printf("%s\n", words[i].huffmanCode);
@@ -188,7 +192,7 @@ void Huffman_Test(pWORD words, int sumWords, HuffmanCode &code) {
 }
 
 //输出二进制的Huffman暗文
-int outPutHufArtical(HuffmanCode code, int sumWord, pWORD words) {
+int outPutHufArtical(HuffmanCode code, int sumWord, pWORD words, char* IN_FILENAME, char* OUT_FILENAME) {
 	unsigned int char_kinds = sumWord;		// 字符种类
 	unsigned long artical_sum = 0;				//文章总字数
 	int artical_sum_huf = 0;		//新生成的文件的字符数量
@@ -205,12 +209,13 @@ int outPutHufArtical(HuffmanCode code, int sumWord, pWORD words) {
 
 	//原文
 	FILE *inFile;
-	inFile = fopen(ORI_FILE_NAME, "r");
+	inFile = fopen(IN_FILENAME, "r");
+
 	fseek(inFile, 3 * sizeof(char), SEEK_SET);		//不知道为什么开头有三个char的东西，先跳过去吧。——不知道为什么不跳过去也可以了。
 
 	//输出
 	FILE *outFile;
-	outFile = fopen(AIM_FILE_NAME_HUFFMAN, "wb");
+	outFile = fopen(OUT_FILENAME, "wb");
 
 	//fread((char*)&temp_8bits, sizeof(unsigned char), 1, put);
 	//fread(&article[sumArtical], 1, sizeof(char), file);
@@ -233,7 +238,7 @@ int outPutHufArtical(HuffmanCode code, int sumWord, pWORD words) {
 	fwrite((char*)&artical_sum, sizeof(unsigned long), 1, outFile);//写入文章总字符数
 
 
-	//一个char一个char地读入原文
+	//一个char一个char地读入英文原文
 	fread((char*)&getch, sizeof(char), 1, inFile);
 	//写入文件
 	while (!feof(inFile))
@@ -283,11 +288,11 @@ int outPutHufArtical(HuffmanCode code, int sumWord, pWORD words) {
 }
 
 //解码
-void decodeHufArtical(HuffmanCode code, int sumWord, pWORD words)
+void decodeHufArtical(HuffmanCode code, int sumWord, pWORD words, char* IN_FILENAME, char* OUT_FILENAME)
 {
 	FILE *infile, *outfile;
-	infile = fopen(AIM_FILE_NAME_HUFFMAN, "rb");
-	outfile = fopen(AIM_FILE_NAME, "wb");
+	infile = fopen(IN_FILENAME, "rb");
+	outfile = fopen(OUT_FILENAME, "wb");
 
 	unsigned long writen_len = 0;		// 控制文件写入长度，达到则立即停止
 
@@ -312,8 +317,8 @@ void decodeHufArtical(HuffmanCode code, int sumWord, pWORD words)
 
 	for (int i = 0; i < char_kinds; i++)
 	{
-		fread((char*)&huf_tree[i].ch, sizeof(unsigned char), 1, infile);
-		fread((char*)&huf_tree[i].weight, sizeof(unsigned long), 1, infile);
+		fread((char*)&huf_tree[i].ch, sizeof(unsigned char), 1, infile);		//获得字符
+		fread((char*)&huf_tree[i].weight, sizeof(unsigned long), 1, infile);	//获得字符对应的权重
 		huf_tree[i].parent = 0;
 	}
 	for (int i = 0; i < node_num; i++)
@@ -364,21 +369,9 @@ void decodeHufArtical(HuffmanCode code, int sumWord, pWORD words)
 	fclose(outfile);
 	free(huf_tree);
 
-	//int i = 0;
-	//while (1)
-	//{
-	//	fread((char*)temp_char, sizeof(unsigned char), 1, infile);//读一个字符
-	//	strcat(getch, (char*)temp_char);
-	//	i = 0;
-	//	do
-	//	{
-	//		strncat(check_char,)
-	//	} while (true);
-
-	//}
-
 }
 
+//构造Huffman树
 void HuffmanTree_Build(huffmanTree & HT, unsigned char* w, int n)
 {
 	if (n <= 1)
@@ -412,6 +405,7 @@ void HuffmanTree_Build(huffmanTree & HT, unsigned char* w, int n)
 	}
 }
 
+//解码时候创建的Huffman树
 void buildEncodeHuffmanTree(huffmanTree &tree, unsigned int sumWords, unsigned int node_num)
 {
 	unsigned int i;
@@ -427,4 +421,66 @@ void buildEncodeHuffmanTree(huffmanTree &tree, unsigned int sumWords, unsigned i
 		tree[i].rchild = min2;
 		tree[i].weight = tree[min1].weight + tree[min2].weight;
 	}
+}
+
+//改名字
+void changeFileNameToHuf(char * txt, char * huf)
+{
+	int i = 0;
+	while (txt[i] != '.')
+	{
+		huf[i] = txt[i];
+		i++;
+	}
+	huf[i++] = '.';
+	huf[i++] = 'H';
+	huf[i++] = 'U';
+	huf[i++] = 'F';
+	huf[i++] = '\0';
+
+}
+
+//从HUF后缀转换到txt后缀
+void changeFileNameToTxt(char * huf, char * txt)
+{
+	int i = 0;
+	while (huf[i]!='.')
+	{
+		txt[i] = huf[i];
+		i++;
+	}
+	txt[i++] = '_';
+	txt[i++] = 'h';
+	txt[i++] = 'u';
+	txt[i++] = 'f';
+	txt[i++] = '.';
+	txt[i++] = 't';
+	txt[i++] = 'x';
+	txt[i++] = 't';
+	txt[i++] = '\0';
+}
+
+void chanFileNameToTxt_new(char * oldTxt, char * newTxt)
+{
+	int i = 0;
+	while (oldTxt[i]!='.')
+	{
+		newTxt[i] = oldTxt[i];
+		i++;
+	}
+
+	newTxt[i++] = '_';
+	newTxt[i++] = 'f';
+	newTxt[i++] = 'r';
+	newTxt[i++] = 'o';
+	newTxt[i++] = 'm';
+	newTxt[i++] = 'H';
+	newTxt[i++] = 'U';
+	newTxt[i++] = 'F';
+	newTxt[i++] = '.';
+	newTxt[i++] = 't';
+	newTxt[i++] = 'x';
+	newTxt[i++] = 't';
+	newTxt[i++] = '\0';
+
 }
