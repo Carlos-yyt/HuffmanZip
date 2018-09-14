@@ -1,4 +1,4 @@
-﻿//统计字符
+//统计字符
 
 #include "statistic.h"
 
@@ -55,7 +55,7 @@ int add_data(pWORD & words, int& sumArtical, char* FILENAME)
 	words=(pWORD)malloc(127 * sizeof(WORD));
 	initializeWORD(words);
 	char *article;//存文章
-	article = (char*)malloc(sizeof(char)*5000);
+	article = (char*)malloc(sizeof(char)*10000);
 
 	sumArtical=0;//总字数
 	int typeSum = 0;//总类型个数（重复算一个）
@@ -64,7 +64,7 @@ int add_data(pWORD & words, int& sumArtical, char* FILENAME)
 	FILE *file;
 	file = fopen(FILENAME, "r");
 	//fseek(file, sizeof(char) * 3, SEEK_SET);//不知道为什么开头有三个char的东西，先跳过去吧。
-	fseek(file, 0, SEEK_SET);//不知道为什么开头有三个char的东西，先跳过去吧。
+	fseek(file, sizeof(char) * 3, SEEK_SET);//不知道为什么开头有三个char的东西，先跳过去吧。
 	while (!feof(file))
 	{
 		fread(&article[sumArtical], 1, sizeof(char), file);
